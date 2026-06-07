@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Kin — WL4Y</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@100;200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --terra: #A8472E;
+    --terra-light: #C4694F;
+    --terra-pale: #F2E0DA;
+    --bg: #FAF7F2;
+    --card: #FFFFFF;
+    --brown: #3D2B1F;
+    --brown-light: #6B4C3B;
+    --grey: #9E9B97;
+    --grey-light: #F0EDE8;
+    --green: #2D5E3A;
+    --lavender: #5C4A78;
+    --overdue: #C0392B;
+    --overdue-bg: #FDECEA;
+    --border: #EDE8E0;
+    --shadow: 0 2px 12px rgba(61,43,31,0.08);
+  }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--brown);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--card);
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .brand {
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--terra);
+    font-weight: 300;
+  }
+
+  .greeting {
+    font-size: 22px;
+    font-weight: 200;
+    color: var(--brown);
+  }
+
+  .date-line {
+    font-size: 11px;
+    color: var(--grey);
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 12px 4px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--grey);
+    font-family: 'Jost', sans-serif;
+  }
+
+  .nav-btn.active { color: var(--terra); }
+
+  .nav-btn svg { width: 20px; height: 20px; }
+
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 16px; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--grey);
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  /* SUMMARY PILLS */
+  .summary-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .pill {
+    flex: 1;
+    background: var(--grey-light);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .pill-num {
+    font-size: 24px;
+    font-weight: 200;
+    color: var(--brown);
+    line-height: 1;
+  }
+
+  .pill-num.overdue { color: var(--overdue); }
+  .pill-num.done { color: var(--green); }
+
+  .pill-label {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* TASKS */
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .task-item:last-child { border-bottom: none; }
+
+  .task-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--terra-light);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    background: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .task-check:checked {
+    background: var(--terra);
+    border-color: var(--terra);
+  }
+
+  .task-content { flex: 1; }
+
+  .task-name {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--brown);
+    line-height: 1.3;
+  }
+
+  .task-name.done {
+    text-decoration: line-through;
+    color: var(--grey);
+  }
+
+  .task-meta {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 400;
+  }
+
+  .tag-overdue { background: var(--overdue-bg); color: var(--overdue); }
+  .tag-today { background: var(--terra-pale); color: var(--terra); }
+  .tag-personal { background: var(--grey-light); color: var(--grey); }
+  .tag-wl4y { background: #EAF0EB; color: var(--green); }
+
+  /* ADD TASK */
+  .add-task-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .add-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--brown);
+    outline: none;
+  }
+
+  .add-input:focus { border-color: var(--terra-light); }
+
+  .add-btn {
+    background: var(--terra);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* AI STEPS */
+  .ai-steps {
+    background: var(--terra-pale);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 6px;
+  }
+
+  .ai-steps-title {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--terra);
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+
+  .ai-step {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--brown);
+    padding: 2px 0;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .ai-step-num {
+    color: var(--terra-light);
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* BRAIN DUMP */
+  .dump-textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--brown);
+    outline: none;
+    resize: none;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .dump-textarea:focus { border-color: var(--terra-light); }
+
+  .dump-items { margin-top: 12px; }
+
+  .dump-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--card);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  .dump-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* REMINDERS */
+  .reminder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .reminder-item:last-child { border-bottom: none; }
+
+  .reminder-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+
+  .reminder-content { flex: 1; }
+
+  .reminder-name {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--brown);
+  }
+
+  .reminder-date {
+    font-size: 10px;
+    color: var(--grey);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* SECTION HEADING */
+  .section-heading {
+    font-size: 18px;
+    font-weight: 200;
+    color: var(--brown);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(61,43,31,0.4);
+    z-index: 200;
+    align-items: flex-end;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--brown);
+    margin-bottom: 16px;
+  }
+
+  .modal-input {
+    width: 100%;
+    background: var(--grey-light);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--brown);
+    outline: none;
+    margin-bottom: 10px;
+  }
+
+  .modal-select {
+    width: 100%;
+    background: var(--grey-light);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--brown);
+    outline: none;
+    margin-bottom: 10px;
+    appearance: none;
+  }
+
+  .modal-btn {
+    width: 100%;
+    background: var(--terra);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    cursor: pointer;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .modal-cancel {
+    width: 100%;
+    background: none;
+    color: var(--grey);
+    border: none;
+    padding: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  .loading-text {
+    font-size: 12px;
+    color: var(--terra);
+    font-weight: 300;
+    font-style: italic;
+    margin-top: 8px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <span class="brand">WL4Y Kin</span>
+    <span class="date-line" id="dateDisplay"></span>
+  </div>
+  <div class="greeting" id="greeting">Good morning, Kay</div>
+</div>
+
+<!-- HOME SECTION -->
+<div class="section active" id="sec-home">
+  <div class="summary-row">
+    <div class="pill">
+      <div class="pill-num overdue" id="count-overdue">0</div>
+      <div class="pill-label">Overdue</div>
+    </div>
+    <div class="pill">
+      <div class="pill-num" id="count-today">0</div>
+      <div class="pill-label">Today</div>
+    </div>
+    <div class="pill">
+      <div class="pill-num done" id="count-done">0</div>
+      <div class="pill-label">Done</div>
+    </div>
+  </div>
+
+  <div class="card" id="home-tasks-card">
+    <div class="card-title">Priority Today</div>
+    <div id="home-task-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Upcoming Reminders</div>
+    <div id="home-reminders"></div>
+  </div>
+</div>
+
+<!-- TASKS SECTION -->
+<div class="section" id="sec-tasks">
+  <div class="section-heading">Tasks</div>
+
+  <div class="add-task-bar">
+    <input class="add-input" id="taskInput" placeholder="Add a task..." />
+    <button class="add-btn" onclick="openTaskModal()">Add</button>
+  </div>
+
+  <div id="task-list"></div>
+</div>
+
+<!-- BRAIN DUMP SECTION -->
+<div class="section" id="sec-dump">
+  <div class="section-heading">Brain Dump</div>
+  <div class="card">
+    <div class="card-title">Type anything — we'll sort it out</div>
+    <textarea class="dump-textarea" id="dumpInput" placeholder="Everything that's on your mind..."></textarea>
+    <button class="add-btn" style="margin-top:10px;width:100%;" onclick="processDump()">Organise</button>
+  </div>
+  <div class="dump-items" id="dump-list"></div>
+</div>
+
+<!-- REMINDERS SECTION -->
+<div class="section" id="sec-reminders">
+  <div class="section-heading">Reminders</div>
+  <button class="add-btn" style="margin-bottom:16px;width:100%;" onclick="openReminderModal()">+ Add Reminder</button>
+  <div class="card">
+    <div id="reminder-list"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('home', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('tasks', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+    <span class="nav-label">Tasks</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('dump', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    <span class="nav-label">Dump</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('reminders', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    <span class="nav-label">Reminders</span>
+  </button>
+</nav>
+
+<!-- TASK MODAL -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-title">New Task</div>
+    <input class="modal-input" id="modalTaskName" placeholder="What needs to be done?" />
+    <input class="modal-input" id="modalTaskDate" type="date" />
+    <select class="modal-select" id="modalTaskCategory">
+      <option value="personal">Personal</option>
+      <option value="wl4y">WL4Y</option>
+      <option value="kids">Kids</option>
+      <option value="home">Home</option>
+      <option value="health">Health</option>
+    </select>
+    <div class="loading-text" id="aiLoading">✦ Generating steps with AI...</div>
+    <div id="modalStepsPreview"></div>
+    <button class="modal-btn" onclick="addTask()">Add Task</button>
+    <button class="modal-cancel" onclick="closeTaskModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- REMINDER MODAL -->
+<div class="modal-overlay" id="reminderModal">
+  <div class="modal">
+    <div class="modal-title">New Reminder</div>
+    <input class="modal-input" id="reminderName" placeholder="What's the reminder?" />
+    <input class="modal-input" id="reminderDate" type="date" />
+    <select class="modal-select" id="reminderType">
+      <option value="medical">💊 Medical</option>
+      <option value="school">🎒 School</option>
+      <option value="business">📦 Business</option>
+      <option value="personal">✨ Personal</option>
+    </select>
+    <button class="modal-btn" onclick="addReminder()">Add Reminder</button>
+    <button class="modal-cancel" onclick="closeReminderModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// STATE
+let tasks = JSON.parse(localStorage.getItem('kin-tasks') || '[]');
+let reminders = JSON.parse(localStorage.getItem('kin-reminders') || '[]');
+let dumpItems = JSON.parse(localStorage.getItem('kin-dump') || '[]');
+
+// DATE & GREETING
+const now = new Date();
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+document.getElementById('dateDisplay').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+const hour = now.getHours();
+const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+document.getElementById('greeting').textContent = `${greet}, Kay`;
+
+// NAVIGATION
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// TASK MODAL
+function openTaskModal() {
+  const name = document.getElementById('taskInput').value.trim();
+  if (name) document.getElementById('modalTaskName').value = name;
+  document.getElementById('taskModal').classList.add('open');
+  if (name) generateSteps(name);
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').classList.remove('open');
+  document.getElementById('taskInput').value = '';
+  document.getElementById('modalTaskName').value = '';
+  document.getElementById('modalStepsPreview').innerHTML = '';
+  document.getElementById('aiLoading').style.display = 'none';
+}
+
+async function generateSteps(taskName) {
+  document.getElementById('aiLoading').style.display = 'block';
+  document.getElementById('modalStepsPreview').innerHTML = '';
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{
+          role: 'user',
+          content: `You are a personal assistant for a busy South African working mother. For the task "${taskName}", generate 3-5 concrete, practical steps needed to complete it. Return ONLY a JSON array of strings, no other text. Example: ["Step one","Step two","Step three"]`
+        }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content[0].text.trim();
+    const steps = JSON.parse(text);
+    document.getElementById('aiLoading').style.display = 'none';
+    const preview = document.getElementById('modalStepsPreview');
+    preview.innerHTML = `<div class="ai-steps"><div class="ai-steps-title">✦ Suggested steps</div>${steps.map((s,i) => `<div class="ai-step"><span class="ai-step-num">${i+1}.</span><span>${s}</span></div>`).join('')}</div>`;
+    preview.dataset.steps = JSON.stringify(steps);
+  } catch(e) {
+    document.getElementById('aiLoading').style.display = 'none';
+  }
+}
+
+document.getElementById('modalTaskName').addEventListener('input', function() {
+  if (this.value.length > 3) generateSteps(this.value);
+});
+
+function addTask() {
+  const name = document.getElementById('modalTaskName').value.trim();
+  if (!name) return;
+  const stepsEl = document.getElementById('modalStepsPreview');
+  let steps = [];
+  try { steps = JSON.parse(stepsEl.dataset.steps || '[]'); } catch(e) {}
+  const task = {
+    id: Date.now(),
+    name,
+    date: document.getElementById('modalTaskDate').value,
+    category: document.getElementById('modalTaskCategory').value,
+    steps,
+    done: false,
+    created: new Date().toISOString()
+  };
+  tasks.unshift(task);
+  save();
+  renderAll();
+  closeTaskModal();
+}
+
+// REMINDER MODAL
+function openReminderModal() {
+  document.getElementById('reminderModal').classList.add('open');
+}
+function closeReminderModal() {
+  document.getElementById('reminderModal').classList.remove('open');
+}
+function addReminder() {
+  const name = document.getElementById('reminderName').value.trim();
+  if (!name) return;
+  const reminder = {
+    id: Date.now(),
+    name,
+    date: document.getElementById('reminderDate').value,
+    type: document.getElementById('reminderType').value
+  };
+  reminders.push(reminder);
+  save();
+  renderAll();
+  closeReminderModal();
+  document.getElementById('reminderName').value = '';
+}
+
+// BRAIN DUMP
+async function processDump() {
+  const text = document.getElementById('dumpInput').value.trim();
+  if (!text) return;
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        messages: [{
+          role: 'user',
+          content: `You are a personal assistant. Take this brain dump and extract individual action items or thoughts. Return ONLY a JSON array of objects with "text" and "category" (personal/wl4y/kids/home/health). No other text. Brain dump: "${text}"`
+        }]
+      })
+    });
+    const data = await response.json();
+    const items = JSON.parse(data.content[0].text.trim());
+    dumpItems = [...items, ...dumpItems];
+    save();
+    renderDump();
+    document.getElementById('dumpInput').value = '';
+  } catch(e) {
+    const item = { text, category: 'personal' };
+    dumpItems.unshift(item);
+    save();
+    renderDump();
+    document.getElementById('dumpInput').value = '';
+  }
+}
+
+// RENDER
+function isOverdue(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr) < new Date(new Date().toDateString());
+}
+
+function isToday(dateStr) {
+  if (!dateStr) return false;
+  return new Date(dateStr).toDateString() === new Date().toDateString();
+}
+
+function catTag(cat) {
+  const map = { wl4y: 'tag-wl4y', personal: 'tag-personal', kids: 'tag-personal', home: 'tag-personal', health: 'tag-personal' };
+  return map[cat] || 'tag-personal';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function reminderIcon(type) {
+  const map = { medical: { bg: '#EAF0EB', icon: '💊' }, school: { bg: '#EEF0F8', icon: '🎒' }, business: { bg: '#F2E0DA', icon: '📦' }, personal: { bg: '#F0EDE8', icon: '✨' } };
+  return map[type] || map.personal;
+}
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  if (!tasks.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--grey);font-size:13px;font-weight:300;">No tasks yet — add one above</div>'; return; }
+  list.innerHTML = tasks.map((t, i) => `
+    <div class="card">
+      <div class="task-item">
+        <input type="checkbox" class="task-check" ${t.done ? 'checked' : ''} onchange="toggleTask(${i})">
+        <div class="task-content">
+          <div class="task-name ${t.done ? 'done' : ''}">${t.name}</div>
+          <div class="task-meta">
+            ${isOverdue(t.date) && !t.done ? '<span class="tag tag-overdue">Overdue</span>' : ''}
+            ${isToday(t.date) && !t.done ? '<span class="tag tag-today">Today</span>' : ''}
+            <span class="tag ${catTag(t.category)}">${t.category}</span>
+            ${t.date ? `<span style="font-size:10px;color:var(--grey);font-weight:300;">${formatDate(t.date)}</span>` : ''}
+          </div>
+          ${t.steps && t.steps.length ? `<div class="ai-steps" style="margin-top:8px;"><div class="ai-steps-title">✦ Steps</div>${t.steps.map((s,j) => `<div class="ai-step"><span class="ai-step-num">${j+1}.</span><span>${s}</span></div>`).join('')}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHome() {
+  const overdue = tasks.filter(t => !t.done && isOverdue(t.date));
+  const today = tasks.filter(t => !t.done && isToday(t.date));
+  const done = tasks.filter(t => t.done);
+  document.getElementById('count-overdue').textContent = overdue.length;
+  document.getElementById('count-today').textContent = today.length;
+  document.getElementById('count-done').textContent = done.length;
+  const priority = [...overdue, ...today].slice(0, 5);
+  const homeList = document.getElementById('home-task-list');
+  if (!priority.length) { homeList.innerHTML = '<div style="font-size:13px;color:var(--grey);font-weight:300;padding:4px 0;">All clear — nothing urgent today</div>'; }
+  else { homeList.innerHTML = priority.map((t, i) => `<div class="task-item"><input type="checkbox" class="task-check" onchange="toggleByTask(${t.id})"><div class="task-content"><div class="task-name">${t.name}</div><div class="task-meta">${isOverdue(t.date) ? '<span class="tag tag-overdue">Overdue</span>' : '<span class="tag tag-today">Today</span>'}<span class="tag ${catTag(t.category)}">${t.category}</span></div></div></div>`).join(''); }
+  const homeReminders = document.getElementById('home-reminders');
+  const upcoming = reminders.slice(0, 3);
+  if (!upcoming.length) { homeReminders.innerHTML = '<div style="font-size:13px;color:var(--grey);font-weight:300;padding:4px 0;">No reminders set</div>'; }
+  else { homeReminders.innerHTML = upcoming.map(r => { const ic = reminderIcon(r.type); return `<div class="reminder-item"><div class="reminder-icon" style="background:${ic.bg}">${ic.icon}</div><div class="reminder-content"><div class="reminder-name">${r.name}</div>${r.date ? `<div class="reminder-date">${formatDate(r.date)}</div>` : ''}</div></div>`; }).join(''); }
+}
+
+function renderReminders() {
+  const list = document.getElementById('reminder-list');
+  if (!reminders.length) { list.innerHTML = '<div style="font-size:13px;color:var(--grey);font-weight:300;padding:4px 0;text-align:center;">No reminders yet</div>'; return; }
+  list.innerHTML = reminders.map(r => { const ic = reminderIcon(r.type); return `<div class="reminder-item"><div class="reminder-icon" style="background:${ic.bg}">${ic.icon}</div><div class="reminder-content"><div class="reminder-name">${r.name}</div>${r.date ? `<div class="reminder-date">${formatDate(r.date)}</div>` : ''}</div></div>`; }).join('');
+}
+
+function renderDump() {
+  const list = document.getElementById('dump-list');
+  const colors = { personal: '#9E9B97', wl4y: '#2D5E3A', kids: '#5C4A78', home: '#A8472E', health: '#C4694F' };
+  list.innerHTML = dumpItems.map(item => `<div class="dump-item"><div class="dump-dot" style="background:${colors[item.category] || colors.personal}"></div><span style="font-size:13px;font-weight:300;">${item.text}</span></div>`).join('');
+}
+
+function toggleTask(i) {
+  tasks[i].done = !tasks[i].done;
+  save();
+  renderAll();
+}
+
+function toggleByTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.done = !t.done; save(); renderAll(); }
+}
+
+function renderAll() {
+  renderHome();
+  renderTasks();
+  renderReminders();
+  renderDump();
+}
+
+function save() {
+  localStorage.setItem('kin-tasks', JSON.stringify(tasks));
+  localStorage.setItem('kin-reminders', JSON.stringify(reminders));
+  localStorage.setItem('kin-dump', JSON.stringify(dumpItems));
+}
+
+// INIT
+renderAll();
+</script>
+</body>
+</html>
